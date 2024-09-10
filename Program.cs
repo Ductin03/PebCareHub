@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PebCareHub.Entities;
 using PebCareHub.Repository;
 using PebCareHub.Services;
+using PebCareHub.UniOfWork;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,8 +63,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ICustomerService, CustormerService>();
 builder.Services.AddScoped<ICustormerRepository, CustormerRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+//builder.Services.AddScoped<IRoleService, RoleService>();
+//builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 
 var app = builder.Build();
 
@@ -76,7 +82,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-//app.UseHttpsRedirection();
+
 
 app.UseAuthentication();
 app.UseAuthorization();

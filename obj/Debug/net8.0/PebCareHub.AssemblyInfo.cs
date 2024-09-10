@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PebCareHub")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+3a90f4c17fb600cb127383d925e2b58d9500fdb4")]
 [assembly: System.Reflection.AssemblyProductAttribute("PebCareHub")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PebCareHub")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

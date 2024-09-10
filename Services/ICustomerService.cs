@@ -5,11 +5,12 @@ namespace PebCareHub.Services
 {
     public interface ICustomerService
     {
-        Task<List<Custormer>> GetCustormersAsync();
-        Task<bool> Authenzication(string username,string password);
+        Task<List<User>> GetCustormersAsync();
+        Task<string> Authenzication(string username,string password);
 
         Task<bool> CreateUsersAsync(CreateUserRequestModel request);
         Task<bool> DeleteUserAsync(Guid Id);
         Task<bool> UpdateAsync(UpdateUserRequestModel request);
+        Task<bool> CreateRole(CreateRoleRequestModel request);
     }
 }

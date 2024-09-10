@@ -2,7 +2,10 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using PebCareHub.Attributes;
+using PebCareHub.Entities;
 using PebCareHub.Models.ResponUserModel;
+using PebCareHub.Repository;
 using PebCareHub.Services;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -10,7 +13,6 @@ using System.Text;
 
 namespace PebCareHub.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomersController : ControllerBase
@@ -23,6 +25,7 @@ namespace PebCareHub.Controllers
             _configuration = configuration;
 
         }
+        [AuthorizeRoles("Administrator")]
         [HttpGet]
         public async Task<IActionResult> GetCustomer()
         {
@@ -33,40 +36,15 @@ namespace PebCareHub.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequestModel request)
         {
-            var isAuthen = await _customerService.Authenzication(request.UserName, request.Password);
-            if (!isAuthen)
-            {
-                return Unauthorized("Not Login");
-            }
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration["JwtSettings:Key"]);
-            var tokenDescriptor = new SecurityTokenDescriptor
-            {
-                Subject = new ClaimsIdentity(new Claim[]
-            {
-                new Claim(ClaimTypes.Name, request.UserName)
-            }),
-                Expires = DateTime.UtcNow.AddMinutes(30),
-                Issuer = _configuration["JwtSettings:Issuer"],
-                Audience = _configuration["JwtSettings:Audience"],
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            var tokenString = tokenHandler.WriteToken(token);
-
-            //Response.Headers.Add("Authorization", $"Bearer {tokenString}");
-
-            return Ok(new { Token = tokenString });
+            string token = await _customerService.Authenzication(request.UserName, request.Password);
+            return Ok(new { Token = token });
         }
-        
-
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestModel request)
         {
             return Ok(await _customerService.CreateUsersAsync(request));
         }
-        [HttpPost("{userId}")]
+        [HttpPost("{userId}")] // HTTP DELETE
         public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
         {
             return Ok(await _customerService.DeleteUserAsync(userId));
@@ -77,7 +55,12 @@ namespace PebCareHub.Controllers
         {
             return Ok(await _customerService.UpdateAsync(request));
         }
-
+        [HttpPost("createrole")]
+        public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequestModel request)
+        {
+            return Ok(await _customerService.CreateRole(request));
+        }
+     
 
     }
 

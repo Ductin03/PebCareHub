@@ -1,5 +1,6 @@
 ﻿using PebCareHub.Entities;
 using Microsoft.EntityFrameworkCore;
+using PebCareHub.Models.ResponUserModel;
 
 namespace PebCareHub.Repository
 {
@@ -11,31 +12,37 @@ namespace PebCareHub.Repository
             _context = context;
         }
 
-        public Task<bool> Create(Custormer custormer)
+        public Task<bool> Create(User custormer)
         {
-            _context.Custormers.Add(custormer);
+            _context.Users.AddAsync(custormer);
             return Task.FromResult(true);
         }
 
-        public Task<bool> Delete(Custormer custormer)
+        public Task<bool> CreateRole(Role role)
         {
-            _context.Custormers.Remove(custormer);
+            _context.Roles.AddAsync(role);
             return Task.FromResult(true);
         }
 
-        public async Task<List<Custormer>> GetAll()
+        public Task<bool> Delete(User custormer)
         {
-            return await _context.Custormers.ToListAsync();
+            _context.Users.Remove(custormer);
+            return Task.FromResult(true);
         }
 
-        public async Task<Custormer> GetById(Guid id)
+        public async Task<List<User>> GetAll()
         {
-            return await _context.Custormers.FirstOrDefaultAsync(x => x.Id==id);    
+            return await _context.Users.ToListAsync();
         }
 
-        public async Task<Custormer> GetByUserName(string username)
+        public async Task<User> GetById(Guid id)
         {
-            return await _context.Custormers.FirstOrDefaultAsync(x => x.UsersName == username);
+            return await _context.Users.FirstOrDefaultAsync(x => x.Id==id);    
+        }
+
+        public async Task<User> GetByUserName(string username)
+        {
+            return await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(x => x.UserName == username);
         }
 
         public async Task<bool> SaveChangeAsync()
@@ -43,9 +50,9 @@ namespace PebCareHub.Repository
             return await _context.SaveChangesAsync()>0;
         }
 
-        public async Task<bool> Update(Custormer custormer)
+        public async Task<bool> Update(User user)
         {
-            _context.Custormers.Update(custormer);
+            _context.Users.Update(user);
             return await Task.FromResult(true);
         }
     }

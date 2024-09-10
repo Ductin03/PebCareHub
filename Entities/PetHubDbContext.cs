@@ -7,7 +7,20 @@ namespace PebCareHub.Entities
         public PetHubDbContext(DbContextOptions<PetHubDbContext> options):base(options) { 
 
         }
-        public DbSet<Custormer> Custormers { get; set;}
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Role)
+                .WithMany(r => r.Users)
+                .HasForeignKey(u => u.RoleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            base.OnModelCreating(modelBuilder);
+        }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+   
+
 
     }
 }
