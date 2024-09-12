@@ -7,21 +7,30 @@ namespace PebCareHub.UniOfWork
     public class UnitOfWork : IUnitOfWork
     {
         private readonly PetHubDbContext _context;
-        private readonly ICustormerRepository _custormerRepository;
+        private readonly IUserRepository _userRepository;
         private readonly IRoleRepository _roleRepository;
+        private readonly ICategoryRepository _categoryRepository;
+        private readonly IProductRepository _productRepository;
 
-        public CustormerRepository Custormer { get; }
+        public UserRepository Custormer { get; }
 
-        public UnitOfWork(PetHubDbContext context,ICustormerRepository custormerRepository,IRoleRepository roleRepository)
+        public UnitOfWork(PetHubDbContext context, IUserRepository userRepository,IRoleRepository roleRepository, ICategoryRepository categoryRepository,IProductRepository productRepository)
         {
             _context = context;
-            _custormerRepository = custormerRepository;
+            _userRepository = userRepository;
             _roleRepository = roleRepository;
+            _categoryRepository = categoryRepository;
+            _productRepository = productRepository;
         }
 
 
-        public ICustormerRepository Customer => _custormerRepository;
-        public IRoleRepository Roles => _roleRepository;
+        public IUserRepository UserRepository => _userRepository;
+        public IRoleRepository RoleRepository => _roleRepository;
+
+
+        public ICategoryRepository CategoryRepository => _categoryRepository;
+
+        public IProductRepository ProductRepository => _productRepository;
 
         public async Task<bool> SaveChangesAsync()
         {

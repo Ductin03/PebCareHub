@@ -3,7 +3,7 @@ using PebCareHub.Models.ResponUserModel;
 
 namespace PebCareHub.Services
 {
-    public interface ICustomerService
+    public interface IUserService
     {
         Task<List<User>> GetCustormersAsync();
         Task<string> Authenzication(string username,string password);

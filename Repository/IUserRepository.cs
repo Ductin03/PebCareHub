@@ -3,7 +3,7 @@ using PebCareHub.Models.ResponUserModel;
 
 namespace PebCareHub.Repository
 {
-    public interface ICustormerRepository
+    public interface IUserRepository
     {
 
         Task<List<User>> GetAll();
@@ -13,6 +13,5 @@ namespace PebCareHub.Repository
         Task<bool> Update(User user);
         Task<bool> Delete(User user);
         Task<bool> CreateRole(Role role);
-        Task<bool> SaveChangeAsync();
     }
 }

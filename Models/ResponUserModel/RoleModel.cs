@@ -3,6 +3,7 @@
     public class RoleModel
     {
             public const string Administrator = "Administrator";
-            public const string Assistant = "Assistant";
+            public const string User = "User";
+            public const string Employee = "Employee";
     }
 }

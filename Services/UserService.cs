@@ -10,17 +10,22 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 
+using BCrypt.Net;
+
+using static System.Net.Mime.MediaTypeNames;
+
 namespace PebCareHub.Services
 {
-    public class CustormerService : ICustomerService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration _configuration;
 
-        public CustormerService(
+        public UserService(
             IUnitOfWork unitOfWork,
             IConfiguration configuration
             )
+
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
@@ -28,8 +33,8 @@ namespace PebCareHub.Services
 
         public async Task<string> Authenzication(string username, string password)
         {
-            var user = await _unitOfWork.Customer.GetByUserName(username);
-            var isAuthen = user.Password == password; // Nhớ Hash;
+            var user = await _unitOfWork.UserRepository.GetByUserName(username);
+            var isAuthen = BCrypt.Net.BCrypt.Verify(password,user.Password); 
             if (!isAuthen)
             {
                 throw new UnauthorizedAccessException("UnAuthorized");
@@ -61,8 +66,8 @@ namespace PebCareHub.Services
             role.Description = request.Description;
             role.CreateDate = DateTime.Now;
             role.UpdateDate = DateTime.Now;
-            await _unitOfWork.Customer.CreateRole(role);
-            return await _unitOfWork.Customer.SaveChangeAsync();
+            await _unitOfWork.UserRepository.CreateRole(role);
+            return await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<bool> CreateUsersAsync(CreateUserRequestModel request)
@@ -72,16 +77,16 @@ namespace PebCareHub.Services
             user.Id = Guid.NewGuid();
             user.Name = request.Name;
             user.UserName = request.UserName;
-            user.Password = request.Password;
+            user.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
             user.Email = request.Email;
             user.RoleId = request.RoleId;
             user.CreateDate = DateTime.Now;
             user.CreatedBy = request.CreatedBy;
-            var check = await _unitOfWork.Customer.GetByUserName(request.UserName);
+            var check = await _unitOfWork.UserRepository.GetByUserName(request.UserName);
             if (check == null)
             {
-                await _unitOfWork.Customer.Create(user);
-                return await _unitOfWork.Customer.SaveChangeAsync();
+                await _unitOfWork.UserRepository.Create(user);
+                return await _unitOfWork.SaveChangesAsync();
             }
             return false;
 
@@ -89,19 +94,19 @@ namespace PebCareHub.Services
 
         public async Task<bool> DeleteUserAsync(Guid Id)
         {
-            var checkId = await _unitOfWork.Customer.GetById(Id);
-            await _unitOfWork.Customer.Delete(checkId);
-            return await _unitOfWork.Customer.SaveChangeAsync();
+            var checkId = await _unitOfWork.UserRepository.GetById(Id);
+            await _unitOfWork.UserRepository.Delete(checkId);
+            return await _unitOfWork.SaveChangesAsync();
         }
 
         public async Task<List<User>> GetCustormersAsync()
         {
-            return await _unitOfWork.Customer.GetAll();
+            return await _unitOfWork.UserRepository.GetAll();
         }
 
         public async Task<bool> UpdateAsync(UpdateUserRequestModel request)
         {
-            var UserExist = await _unitOfWork.Customer.GetById(request.Id);
+            var UserExist = await _unitOfWork.UserRepository.GetById(request.Id);
             if (UserExist == null)
             {
                 throw new Exception("Khoong cos Id");
@@ -111,8 +116,8 @@ namespace PebCareHub.Services
             UserExist.UserName = request.UserName;
             UserExist.Password = request.Password;
             UserExist.Email = request.Email;
-            await _unitOfWork.Customer.Update(UserExist);
-            return await _unitOfWork.Customer.SaveChangeAsync();
+            await _unitOfWork.UserRepository.Update(UserExist);
+            return await _unitOfWork.SaveChangesAsync();
         }
     }
 }

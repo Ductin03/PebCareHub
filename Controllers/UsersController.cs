@@ -15,50 +15,62 @@ namespace PebCareHub.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomersController : ControllerBase
+    public class UsersController : ControllerBase
     {
-        private readonly ICustomerService _customerService;
+        private readonly IUserService _userService;
         private readonly IConfiguration _configuration;
-        public CustomersController(ICustomerService customerService,IConfiguration configuration)
+        public UsersController(IUserService userService,IConfiguration configuration)
         {
-            _customerService = customerService;
+            _userService = userService;
             _configuration = configuration;
 
         }
-        [AuthorizeRoles("Administrator")]
+        [AuthorizeRoles(RoleModel.Administrator,RoleModel.User)]
         [HttpGet]
         public async Task<IActionResult> GetCustomer()
         {
-            return Ok(await _customerService.GetCustormersAsync());
+            return Ok(await _userService.GetCustormersAsync());
         }
 
         [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginUserRequestModel request)
         {
-            string token = await _customerService.Authenzication(request.UserName, request.Password);
+            string token = await _userService.Authenzication(request.UserName, request.Password);
             return Ok(new { Token = token });
         }
+
+
+        //[AuthorizeRoles(RoleModel.Administrator)]
         [HttpPost("create")]
         public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestModel request)
         {
-            return Ok(await _customerService.CreateUsersAsync(request));
+            return Ok(await _userService.CreateUsersAsync(request));
         }
-        [HttpPost("{userId}")] // HTTP DELETE
+
+
+        [AuthorizeRoles(RoleModel.Administrator)]
+        [HttpDelete("delete/{userId}")] // HTTP DELETE
         public async Task<IActionResult> DeleteUser([FromRoute] Guid userId)
         {
-            return Ok(await _customerService.DeleteUserAsync(userId));
+            return Ok(await _userService.DeleteUserAsync(userId));
 
         }
+
+
+        [AuthorizeRoles(RoleModel.Administrator)]
         [HttpPatch("update")]
         public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestModel request)
         {
-            return Ok(await _customerService.UpdateAsync(request));
+            return Ok(await _userService.UpdateAsync(request));
         }
+
+
+        //[AuthorizeRoles(RoleModel.Administrator)]
         [HttpPost("createrole")]
         public async Task<IActionResult> CreateRole([FromBody] CreateRoleRequestModel request)
         {
-            return Ok(await _customerService.CreateRole(request));
+            return Ok(await _userService.CreateRole(request));
         }
      
 

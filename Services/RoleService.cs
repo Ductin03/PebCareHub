@@ -14,7 +14,7 @@ namespace PebCareHub.Services
         }
         public Task<Role> GetRoleByUserIdAsync(Guid userId)
         {
-            return  _unitOfWork.Roles.GetRoleById(userId);
+            return  _unitOfWork.RoleRepository.GetRoleById(userId);
         }
     }
 

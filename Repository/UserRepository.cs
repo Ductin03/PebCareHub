@@ -4,10 +4,10 @@ using PebCareHub.Models.ResponUserModel;
 
 namespace PebCareHub.Repository
 {
-    public class CustormerRepository : ICustormerRepository
+    public class UserRepository : IUserRepository
     {   
         private readonly PetHubDbContext _context;
-        public CustormerRepository(PetHubDbContext context)
+        public UserRepository(PetHubDbContext context)
         {
             _context = context;
         }
@@ -43,11 +43,6 @@ namespace PebCareHub.Repository
         public async Task<User> GetByUserName(string username)
         {
             return await _context.Users.Include(u => u.Role).FirstOrDefaultAsync(x => x.UserName == username);
-        }
-
-        public async Task<bool> SaveChangeAsync()
-        {
-            return await _context.SaveChangesAsync()>0;
         }
 
         public async Task<bool> Update(User user)

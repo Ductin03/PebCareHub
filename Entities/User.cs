@@ -25,7 +25,9 @@ namespace PebCareHub.Entities
         [ForeignKey(nameof(Role))]
         public Guid RoleId { get; set; }
         public Role Role { get; set; }
-        
+        public Guid SellerId { get; set; }
+        public ICollection<Pet> Pet { get; set; }
+        public ICollection<Product> Products { get; set; }
 
 
     }
